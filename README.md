@@ -5,7 +5,7 @@
 This repo contains an example of mixing Qt with Gstreamer and LibTorch for video processing.
 As I have found no similar prototype that is publicly available, I want to share this.
 
-While it features Yolov8, this is not another illustration of Yolov8 inferencing on C++.
+While it features Yolov8, it is not another illustration of Yolov8 inferencing on C++.
 
 <p align="center">
   <img src="data/capture.png" height="360"/>
@@ -17,11 +17,12 @@ Hence, there could be many unused files that I have yet trimmed.
 
 ## Why not DeepStream?
 
-The following table lists some of the reasons why we decided to migrate to LibTorch:
+Yes, a matured framework like DeepStream should have been the go-to choice.
+However, the following table lists some of the reasons why we decided to migrate to LibTorch:
 
 <table>
 <caption>
-Comparisons <i>(to be verified)</i>>
+Comparisons <i>(to be verified)</i>
 </caption>
 
 <tr>
@@ -34,10 +35,9 @@ Comparisons <i>(to be verified)</i>>
 
 - Forced quantization (``TensorRT``) and the loss of performance is sometimes problematic.
     - But fast.
-- Heavy pipeline initialization as model must be loaded during this stage.
+- Heavy pipeline initialization as models must be loaded during this stage.
 - Not easy to dynamically configured when pipeline started, enabling/disabling requires manipulation of elements
-  (
-  like [this](https://gstreamer.freedesktop.org/documentation/application-development/advanced/pipeline-manipulation.html?gi-language=c#dynamically-changing-the-pipeline)).
+  (like [this](https://gstreamer.freedesktop.org/documentation/application-development/advanced/pipeline-manipulation.html?gi-language=c#dynamically-changing-the-pipeline)).
 - Fixed dense processing or sparse processing (e.g. once every 3 frames).
 - Model outputs are drawn directly on the video, configurations are limited to those provided by the ``gst-nvdsosd``
   element.
@@ -47,7 +47,7 @@ Comparisons <i>(to be verified)</i>>
 
 - Fidelitous to training performance, or quantize/run on different ``dtype`` at will, just like PyTorch.
     - As fast as LibTorch (the backend of PyTorch) allows.
-- Fast pipeline initialization as model is loaded on a different thread.
+- Fast pipeline initialization as models are loaded on a different thread.
 - Runtime hyperparameter flexibility, can be enabled/disabled easily.
 - Sparse processing based on model availability.
     - This also means we can use arbitrarily large model running on a separate thread, and it _doesn't_ affect the
