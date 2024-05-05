@@ -1,6 +1,6 @@
 <img style="float: left;" src="resources/lantorch.svg" height=48> LanTorch: Qt+Gstreamer+LibTorch Example App
 ======
-[![GitHub](https://img.shields.io/github/license/inspiros/qt_gst_libtorch)](LICENSE.txt)
+[![GitHub](https://img.shields.io/github/license/inspiros/lantorch)](LICENSE.txt)
 
 This repo contains an example of mixing Qt with Gstreamer and LibTorch for video processing.
 As I have found no similar prototype that is publicly available, I want to share this.
