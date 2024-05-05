@@ -1,0 +1,61 @@
+app:
+  dnn:
+    yolo_infer:
+      model_filepath: ../models/yolov8s.torchscript
+      classes_filepath:
+      yolo_options:
+        input_shape: [ 640, 640 ]
+        score_threshold: 0.4
+        nms_threshold: 0.45
+      device: cuda:0
+      dtype: torch.float32
+      priority: HighestPriority  # IdlePriority | LowestPriority | LowPriority | NormalPriority | HighPriority | HighestPriority | TimeCriticalPriority | InheritPriority
+      verbose: false
+
+  gst:
+    pipeline:
+      name: test_pipeline
+      stem_bin:
+        description: >-
+          filesrc location=../data/240p1.mp4 ! qtdemux name=demuxer demuxer.video_0 ! 
+          h264parse name=parser ! nvv4l2decoder name=decoder ! nvvideoconvert name=nvconverter ! tee name=inference_tee
+          inference_tee. ! queue name=display_queue leaky=downstream !
+          nvvideoconvert ! video/x-raw,format=(string)RGB ! videorate ! qwidget5videosink name=display_sink force-aspect-ratio=true
+#        description: >-
+#          v4l2src device=/dev/video0 ! video/x-raw,format=YUY2 ! videoconvert ! video/x-raw,format=NV12 !
+#          nvvideoconvert name=decoder ! tee name=inference_tee
+#          inference_tee. ! queue name=display_queue max-size-bytes=65536 max-size-buffers=0 max-size-time=0 leaky=downstream !
+#          nvvideoconvert ! video/x-raw,format=(string)RGB ! videorate ! qwidget5videosink name=display_sink force-aspect-ratio=true
+      inference_bin:
+        description: >-
+          queue name={bin_name}_queue ! appsink name={bin_name}_sink drop=true max-buffers=1
+      frame_meta_probe:
+        element: decoder
+        pad: src
+
+  ui:
+    style_sheet_filepath: qdarkstyle/dark/darkstyle.qss
+    main_window:
+      window_name: "LanTorch"
+      window_logo_filepath: lantorch.svg
+      video_widget:
+        use_opengl_paint_engine: false
+        bbox_pool_size: 100
+        bbox_color_palette: deep  # Seaborn color palette
+        detection_bounding_box_options:
+          shape: RoundedRect  # Rect | RoundedRect | Ellipse
+          rounded_rect_radius_ratio: 0.05
+          line_width: 3
+          focus_line_width: 4
+          fill: true
+          fill_alpha: 30
+          focus_fill_alpha: 30
+          show_description: Always  # Always | OnFocus | Never
+          show_confidence: OnFocus
+          boxed_description: true
+          font_family: arial
+          font_point_size: 12
+          focus_font_point_size: 13
+          enable_focus: true
+          cosmetic: true
+          antialiasing: true
