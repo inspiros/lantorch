@@ -5,7 +5,7 @@
 This repo contains an example of mixing Qt with Gstreamer and LibTorch for video processing.
 As I have found no similar prototype that is publicly available, I want to share this.
 
-While it features Yolov8, it is not another illustration of Yolov8 inferencing on C++.
+While it features Yolov8, it is not just another illustration of Yolov8 inferencing on C++.
 
 <p align="center">
   <img src="data/capture.png" height="360"/>
@@ -53,8 +53,8 @@ Comparisons <i>(to be verified)</i>
     - This also means we can use arbitrarily large model running on a separate thread, and it _doesn't_ affect the
       video streaming pipeline.
 - Interactiveness:
-    - You can interact/animate with model outputs overlayed on the video using Qt's GraphicsItems, and overlay whatever
-      you want.
+    - Model outputs are overlayed on the video using subclasses of ``QGraphicsItems``,
+      which can be animated/interacted with.
     - Benefits from other Qt's infrastructures.
 
 </td>
@@ -154,6 +154,8 @@ Note that in stem bin's description, there are two required named elements:
 
 - ``tee name=inference_tee``: the fork point for all inference bins added later.
 - ``qwidget5videosink name=display_sink``: video output for Qt.
+- An element with name similar to that defined in ``app.gst.pipeline.frame_meta_probe.element``, whose pad we will
+  plug a probe to register frame metas.
 
 ### Installation
 
@@ -187,8 +189,8 @@ cmake --build build -j10 --
 
 #### Example 1: Adding a simple classification inference branch
 
-This example assumes that you have a standard ``torch`` classification model and
-[converted to ``.torchscript``](#convert-pre-trained-weights-to-torchscript-format).
+This example assumes that you have a standard ``torch`` classification model [converted to ``.torchscript``](#convert-pre-trained-weights-to-torchscript-format)
+format.
 
 First, create a ``ClassificationInferenceWorker`` class that extends ``GstInferenceWorker``, overriding the
 ``setup()``, ``forward(const GstInferenceSample &)``, and ``cleanup()`` methods.
@@ -309,8 +311,8 @@ signals:  // maybe you will need these signals
 ```
 
 After that, we need to register a new inference thread to ``MainWindow`` to handle this worker.
-Please examine how I implemented Yolo in [src/app/dnn/yolo_inference_worker.h](src/app/dnn/yolo_inference_worker.h)
-and [src/app/ui/main_window.cpp](src/app/ui/main_window.cpp) and adapt.
+Please examine how I implemented these for Yolo in [src/app/dnn/yolo_inference_worker.h](src/app/dnn/yolo_inference_worker.h)
+and [src/app/ui/main_window.cpp](src/app/ui/main_window.cpp), and adapt.
 
 _More to be added on demand_
 

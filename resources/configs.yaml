@@ -24,7 +24,7 @@ app:
 #        description: >-
 #          v4l2src device=/dev/video0 ! video/x-raw,format=YUY2 ! videoconvert ! video/x-raw,format=NV12 !
 #          nvvideoconvert name=decoder ! tee name=inference_tee
-#          inference_tee. ! queue name=display_queue max-size-bytes=65536 max-size-buffers=0 max-size-time=0 leaky=downstream !
+#          inference_tee. ! queue name=display_queue leaky=downstream !
 #          nvvideoconvert ! video/x-raw,format=(string)RGB ! videorate ! qwidget5videosink name=display_sink force-aspect-ratio=true
       inference_bin:
         description: >-
