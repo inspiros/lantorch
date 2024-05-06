@@ -4,6 +4,9 @@
 
 #include "dnn/ultralytics/yolo.h"
 
+#include "../utils/time_meter.h"
+#include "../utils/debug_mode.h"
+
 #include <QDebug>
 
 class YoloInferenceWorker : public GstInferenceWorker {
@@ -13,6 +16,8 @@ Q_OBJECT  // Q_OBJECT does not allow template classes
 
     std::string model_filepath_;
     std::string classes_filepath_;
+
+    time_meter<std::chrono::high_resolution_clock> time_meter_;
 
 public:
     ultralytics::YoloOptions options;
@@ -52,32 +57,44 @@ protected:
     }
 
     std::optional<GstInferenceSample> forward(const GstInferenceSample &sample) override {
+        AutoDebugMode m(verbose);
+        at::NoGradGuard g;
+
+        DEBUG_ONLY([&]() {
+            time_meter_.reset();
+        })
         auto frame_id = sample.frame_meta()->frame_num;
         auto img = sample.get_image();
 
-        at::NoGradGuard g;
-        auto t0 = std::chrono::high_resolution_clock::now();
+        DEBUG_ONLY([&]() {
+            time_meter_.tick();
+        })
         // inference
         auto detections = model_.forward(img);
-        auto t1 = std::chrono::high_resolution_clock::now();
+        DEBUG_ONLY([&]() {
+            time_meter_.tick();
+        })
 
         emit new_sample_and_result(frame_id, sample, detections);
         emit new_result(frame_id, detections);
-        if (verbose) {
+
+        DEBUG_ONLY([&]() {
+            time_meter_.duration_stats_update();
             auto result_str = c10::str(
                     "[Detection] frame_id=", frame_id,
                     ", n_detections=", detections.size(),
                     "\n\ttotal_elapsed_time=", std::setw(5),
-                    (float) std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count() / 1000, "ms",
-                    " (infer:", std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count(), "µs)\n");
+                    (float) time_meter_.duration_cast<std::chrono::microseconds>().count() / 1000, "ms/",
+                    (float) time_meter_.mean_duration_cast<std::chrono::microseconds>()->count() / 1000, "ms",
+                    " (infer:", time_meter_.duration_cast<std::chrono::microseconds>(0, 1).count(), "µs)\n");
             for (auto &det: detections) {
                 result_str = c10::str(
                         result_str, " ", det.label_id,
                         " (", model_.classes_name(det.label_id), ") - ",
                         det.confidence, " - ", det.bbox, "\n");
             }
-            std::cout << result_str;
-        }
+            qInfo().noquote() << QString::fromStdString(result_str);
+        })
         return std::nullopt;
     }
 

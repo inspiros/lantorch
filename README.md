@@ -46,7 +46,8 @@ Comparisons <i>(to be verified)</i>
 <td>
 
 - Fidelitous to training performance, or quantize/run on different ``dtype`` at will, just like PyTorch.
-    - As fast as LibTorch (the backend of PyTorch) allows.
+    - As fast as LibTorch (the backend of PyTorch).
+    - Model latency can be uncontrollably inconsistent though.
 - Fast pipeline initialization as models are loaded on a different thread.
 - Runtime hyperparameter flexibility, can be enabled/disabled easily.
 - Sparse processing based on model availability.
@@ -150,7 +151,7 @@ qt_gst_libtorch/
 App configs, including gstreamer pipeline description strings,
 are defined in [``resources/configs.yaml``](resources/configs.yaml).
 
-Note that in stem bin's description, there are two required named elements:
+Note that in stem bin's description, there are some required named elements:
 
 - ``tee name=inference_tee``: the fork point for all inference bins added later.
 - ``qwidget5videosink name=display_sink``: video output for Qt.

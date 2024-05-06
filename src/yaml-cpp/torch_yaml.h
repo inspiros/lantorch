@@ -1,8 +1,8 @@
 #pragma once
 
-#include <yaml-cpp/yaml.h>
+#include "std/hash.h"
 
-#include "utils/hash.h"
+#include <yaml-cpp/yaml.h>
 
 #undef slots
 
@@ -71,130 +71,132 @@ namespace YAML {
         static bool decode(const Node &node, at::ScalarType &rhs) {
             if (!node.IsScalar())
                 return false;
-            switch (hash(node.Scalar())) {
-                case hash("Byte"):
-                case hash("byte"):
-                case hash("torch.byte"):
+
+            using hasher = std::static_hash<std::string_view>;
+            switch (hasher::call(node.Scalar())) {
+                case hasher::call("Byte"):
+                case hasher::call("byte"):
+                case hasher::call("torch.byte"):
                     rhs = at::ScalarType::Byte;
                     break;
-                case hash("Char"):
-                case hash("char"):
-                case hash("torch.char"):
+                case hasher::call("Char"):
+                case hasher::call("char"):
+                case hasher::call("torch.char"):
                     rhs = at::ScalarType::Char;
                     break;
-                case hash("Short"):
-                case hash("short"):
-                case hash("torch.short"):
+                case hasher::call("Short"):
+                case hasher::call("short"):
+                case hasher::call("torch.short"):
                     rhs = at::ScalarType::Short;
                     break;
-                case hash("Int"):
-                case hash("int"):
-                case hash("torch.int"):
+                case hasher::call("Int"):
+                case hasher::call("int"):
+                case hasher::call("torch.int"):
                     rhs = at::ScalarType::Int;
                     break;
-                case hash("Long"):
-                case hash("long"):
-                case hash("torch.long"):
+                case hasher::call("Long"):
+                case hasher::call("long"):
+                case hasher::call("torch.long"):
                     rhs = at::ScalarType::Long;
                     break;
-                case hash("Half"):
-                case hash("half"):
-                case hash("torch.half"):
+                case hasher::call("Half"):
+                case hasher::call("half"):
+                case hasher::call("torch.half"):
                     rhs = at::ScalarType::Half;
                     break;
-                case hash("Float"):
-                case hash("float"):
-                case hash("torch.float"):
+                case hasher::call("Float"):
+                case hasher::call("float"):
+                case hasher::call("torch.float"):
                     rhs = at::ScalarType::Float;
                     break;
-                case hash("Double"):
-                case hash("double"):
-                case hash("torch.double"):
+                case hasher::call("Double"):
+                case hasher::call("double"):
+                case hasher::call("torch.double"):
                     rhs = at::ScalarType::Double;
                     break;
-                case hash("ComplexHalf"):
-                case hash("complex32"):
-                case hash("torch.complex32"):
+                case hasher::call("ComplexHalf"):
+                case hasher::call("complex32"):
+                case hasher::call("torch.complex32"):
                     rhs = at::ScalarType::ComplexHalf;
                     break;
-                case hash("ComplexFloat"):
-                case hash("complex64"):
-                case hash("torch.complex64"):
+                case hasher::call("ComplexFloat"):
+                case hasher::call("complex64"):
+                case hasher::call("torch.complex64"):
                     rhs = at::ScalarType::ComplexFloat;
                     break;
-                case hash("ComplexDouble"):
-                case hash("complex124"):
-                case hash("torch.complex124"):
+                case hasher::call("ComplexDouble"):
+                case hasher::call("complex124"):
+                case hasher::call("torch.complex124"):
                     rhs = at::ScalarType::ComplexDouble;
                     break;
-                case hash("Bool"):
-                case hash("bool"):
-                case hash("torch.bool"):
+                case hasher::call("Bool"):
+                case hasher::call("bool"):
+                case hasher::call("torch.bool"):
                     rhs = at::ScalarType::Bool;
                     break;
-                case hash("QInt8"):
-                case hash("qint8"):
-                case hash("torch.qint8"):
+                case hasher::call("QInt8"):
+                case hasher::call("qint8"):
+                case hasher::call("torch.qint8"):
                     rhs = at::ScalarType::QInt8;
                     break;
-                case hash("QUInt8"):
-                case hash("quint8"):
-                case hash("torch.quint8"):
+                case hasher::call("QUInt8"):
+                case hasher::call("quint8"):
+                case hasher::call("torch.quint8"):
                     rhs = at::ScalarType::QUInt8;
                     break;
-                case hash("QInt32"):
-                case hash("qint32"):
-                case hash("torch.qint32"):
+                case hasher::call("QInt32"):
+                case hasher::call("qint32"):
+                case hasher::call("torch.qint32"):
                     rhs = at::ScalarType::QInt32;
                     break;
-                case hash("BFloat16"):
-                case hash("bfloat16"):
-                case hash("torch.bfloat16"):
+                case hasher::call("BFloat16"):
+                case hasher::call("bfloat16"):
+                case hasher::call("torch.bfloat16"):
                     rhs = at::ScalarType::BFloat16;
                     break;
-                case hash("QUInt4x2"):
-                case hash("quint4x2"):
-                case hash("torch.quint4x2"):
+                case hasher::call("QUInt4x2"):
+                case hasher::call("quint4x2"):
+                case hasher::call("torch.quint4x2"):
                     rhs = at::ScalarType::QUInt4x2;
                     break;
-                case hash("QUInt2x4"):
-                case hash("quint2x4"):
-                case hash("torch.quint2x4"):
+                case hasher::call("QUInt2x4"):
+                case hasher::call("quint2x4"):
+                case hasher::call("torch.quint2x4"):
                     rhs = at::ScalarType::QUInt2x4;
                     break;
-                case hash("Bits1x8"):
-                case hash("bits1x8"):
-                case hash("torch.bits1x8"):
+                case hasher::call("Bits1x8"):
+                case hasher::call("bits1x8"):
+                case hasher::call("torch.bits1x8"):
                     rhs = at::ScalarType::Bits1x8;
                     break;
-                case hash("Bits2x4"):
-                case hash("bits2x4"):
-                case hash("torch.bits2x4"):
+                case hasher::call("Bits2x4"):
+                case hasher::call("bits2x4"):
+                case hasher::call("torch.bits2x4"):
                     rhs = at::ScalarType::Bits2x4;
                     break;
-                case hash("Bits4x2"):
-                case hash("bits4x2"):
-                case hash("torch.bits4x2"):
+                case hasher::call("Bits4x2"):
+                case hasher::call("bits4x2"):
+                case hasher::call("torch.bits4x2"):
                     rhs = at::ScalarType::Bits4x2;
                     break;
-                case hash("Bits8"):
-                case hash("bits8"):
-                case hash("torch.bits8"):
+                case hasher::call("Bits8"):
+                case hasher::call("bits8"):
+                case hasher::call("torch.bits8"):
                     rhs = at::ScalarType::Bits8;
                     break;
-                case hash("Bits16"):
-                case hash("bits16"):
-                case hash("torch.bits16"):
+                case hasher::call("Bits16"):
+                case hasher::call("bits16"):
+                case hasher::call("torch.bits16"):
                     rhs = at::ScalarType::Bits16;
                     break;
-                case hash("Float8_e5m2"):
-                case hash("float8_e5m2"):
-                case hash("torch.float8_e5m2"):
+                case hasher::call("Float8_e5m2"):
+                case hasher::call("float8_e5m2"):
+                case hasher::call("torch.float8_e5m2"):
                     rhs = at::ScalarType::Float8_e5m2;
                     break;
-                case hash("Float8_e4m3fn"):
-                case hash("float8_e4m3fn"):
-                case hash("torch.float8_e4m3fn"):
+                case hasher::call("Float8_e4m3fn"):
+                case hasher::call("float8_e4m3fn"):
+                case hasher::call("torch.float8_e4m3fn"):
                     rhs = at::ScalarType::Float8_e4m3fn;
                     break;
                 default:

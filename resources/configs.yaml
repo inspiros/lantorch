@@ -10,7 +10,7 @@ app:
       device: cuda:0
       dtype: torch.float32
       priority: HighestPriority  # IdlePriority | LowestPriority | LowPriority | NormalPriority | HighPriority | HighestPriority | TimeCriticalPriority | InheritPriority
-      verbose: false
+      verbose: true
 
   gst:
     pipeline:

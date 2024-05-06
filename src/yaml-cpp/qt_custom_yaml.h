@@ -1,8 +1,8 @@
 #pragma once
 
-#include <yaml-cpp/yaml.h>
+#include "std/hash.h"
 
-#include "utils/hash.h"
+#include <yaml-cpp/yaml.h>
 
 #include "qt_yaml.h"
 #include "qt/ColorPalette"
@@ -64,21 +64,22 @@ namespace YAML {
             if (!node.IsScalar())
                 return false;
 
-            switch (hash(node.Scalar())) {
-                case hash("Rect"):
-                case hash("rect"):
-                case hash("Rectangle"):
-                case hash("rectangle"):
+            using hasher = std::static_hash<std::string_view>;
+            switch (hasher::call(node.Scalar())) {
+                case hasher::call("Rect"):
+                case hasher::call("rect"):
+                case hasher::call("Rectangle"):
+                case hasher::call("rectangle"):
                     rhs = DetectionBoundingBoxOptions::Shape::Rect;
                     break;
-                case hash("RoundedRect"):
-                case hash("roundedrect"):
-                case hash("RoundedRectangle"):
-                case hash("roundedrectangle"):
+                case hasher::call("RoundedRect"):
+                case hasher::call("roundedrect"):
+                case hasher::call("RoundedRectangle"):
+                case hasher::call("roundedrectangle"):
                     rhs = DetectionBoundingBoxOptions::Shape::RoundedRect;
                     break;
-                case hash("Ellipse"):
-                case hash("ellipse"):
+                case hasher::call("Ellipse"):
+                case hasher::call("ellipse"):
                     rhs = DetectionBoundingBoxOptions::Shape::Ellipse;
                     break;
                 default:
@@ -111,17 +112,18 @@ namespace YAML {
             if (!node.IsScalar())
                 return false;
 
-            switch (hash(node.Scalar())) {
-                case hash("Always"):
-                case hash("always"):
+            using hasher = std::static_hash<std::string_view>;
+            switch (hasher::call(node.Scalar())) {
+                case hasher::call("Always"):
+                case hasher::call("always"):
                     rhs = DetectionBoundingBoxOptions::ShowFlag::Always;
                     break;
-                case hash("OnFocus"):
-                case hash("onfocus"):
+                case hasher::call("OnFocus"):
+                case hasher::call("onfocus"):
                     rhs = DetectionBoundingBoxOptions::ShowFlag::OnFocus;
                     break;
-                case hash("Never"):
-                case hash("never"):
+                case hasher::call("Never"):
+                case hasher::call("never"):
                     rhs = DetectionBoundingBoxOptions::ShowFlag::Never;
                     break;
                 default:

@@ -17,9 +17,9 @@
 
 #pragma once
 
-#include <yaml-cpp/yaml.h>
+#include "std/hash.h"
 
-#include "utils/hash.h"
+#include <yaml-cpp/yaml.h>
 
 #include <QColor>
 #include <QString>
@@ -283,29 +283,30 @@ namespace YAML {
             if (!node.IsScalar())
                 return false;
 
-            switch (hash(node.Scalar())) {
-                case hash("IdlePriority"):
+            using hasher = std::static_hash<std::string_view>;
+            switch (hasher::call(node.Scalar())) {
+                case hasher::call("IdlePriority"):
                     rhs = QThread::IdlePriority;
                     break;
-                case hash("LowestPriority"):
+                case hasher::call("LowestPriority"):
                     rhs = QThread::LowestPriority;
                     break;
-                case hash("LowPriority"):
+                case hasher::call("LowPriority"):
                     rhs = QThread::LowPriority;
                     break;
-                case hash("NormalPriority"):
+                case hasher::call("NormalPriority"):
                     rhs = QThread::NormalPriority;
                     break;
-                case hash("HighPriority"):
+                case hasher::call("HighPriority"):
                     rhs = QThread::HighPriority;
                     break;
-                case hash("HighestPriority"):
+                case hasher::call("HighestPriority"):
                     rhs = QThread::HighestPriority;
                     break;
-                case hash("TimeCriticalPriority"):
+                case hasher::call("TimeCriticalPriority"):
                     rhs = QThread::TimeCriticalPriority;
                     break;
-                case hash("InheritPriority"):
+                case hasher::call("InheritPriority"):
                     rhs = QThread::InheritPriority;
                     break;
                 default:
