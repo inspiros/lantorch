@@ -30,11 +30,6 @@ public:
               cosmetic_(true),
               antialiasing_(false) {}
 
-    static inline DetectionBoundingBoxOptions default_instance() noexcept {
-        static const auto inst = DetectionBoundingBoxOptions();
-        return inst;
-    }
-
     // setters
     [[nodiscard]] inline DetectionBoundingBoxOptions shape(Shape shape) const noexcept {
         auto r = *this;

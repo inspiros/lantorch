@@ -58,15 +58,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
             ? yolo_infer_config["classes_filepath"].as<AppConfig::crel_path>().string() : "",
             ultralytics::YoloOptions()
                     .input_shape(yolo_infer_config["yolo_options"]["input_shape"].as<cv::Size>(
-                            ultralytics::YoloOptions::DEFAULT_OPTION(input_shape)))
+                            DEFAULT_PARAM(ultralytics::YoloOptions, input_shape)))
                     .confidence_threshold(yolo_infer_config["yolo_options"]["confidence_threshold"].as<float>(
-                            ultralytics::YoloOptions::DEFAULT_OPTION(confidence_threshold)))
+                            DEFAULT_PARAM(ultralytics::YoloOptions, confidence_threshold)))
                     .score_threshold(yolo_infer_config["yolo_options"]["score_threshold"].as<float>(
-                            ultralytics::YoloOptions::DEFAULT_OPTION(score_threshold)))
+                            DEFAULT_PARAM(ultralytics::YoloOptions, score_threshold)))
                     .nms_threshold(yolo_infer_config["yolo_options"]["nms_threshold"].as<float>(
-                            ultralytics::YoloOptions::DEFAULT_OPTION(nms_threshold)))
+                            DEFAULT_PARAM(ultralytics::YoloOptions, nms_threshold)))
                     .align_center(yolo_infer_config["yolo_options"]["align_center"].as<bool>(
-                            ultralytics::YoloOptions::DEFAULT_OPTION(align_center))),
+                            DEFAULT_PARAM(ultralytics::YoloOptions, align_center))),
             yolo_infer_config["device"].as<at::Device>(fallback_device),
             yolo_infer_config["dtype"].as<at::ScalarType>(at::kFloat),
             yolo_infer_config["verbose"].as<bool>(false));

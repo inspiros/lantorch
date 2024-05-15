@@ -18,6 +18,7 @@
 #pragma once
 
 #include "std/hash.h"
+#include "std/lexical_cast.h"
 
 #include <yaml-cpp/yaml.h>
 
@@ -32,6 +33,72 @@
 #include <QThread>
 
 namespace YAML {
+// Qt::AlignmentFlag
+    template<>
+    struct convert<Qt::AlignmentFlag> {
+        static Node encode(const Qt::AlignmentFlag &rhs) {
+            std::stringstream ss;
+            ss << std::hex << rhs;
+            return Node(ss.str());
+        }
+
+        static bool decode(const Node &node, Qt::AlignmentFlag &rhs) {
+            if (!node.IsScalar())
+                return false;
+
+            int res;
+            if (std::lexical_cast(node.Scalar(), res)) {
+                rhs = static_cast<Qt::AlignmentFlag>(res);
+                return true;
+            }
+
+            using hasher = std::static_hash<std::string_view>;
+            switch (hasher::call(node.Scalar())) {
+                case hasher::call("AlignLeft"):
+                case hasher::call("AlignLeading"):
+                    rhs = Qt::AlignLeft;
+                    break;
+                case hasher::call("AlignRight"):
+                case hasher::call("AlignTrailing"):
+                    rhs = Qt::AlignRight;
+                    break;
+                case hasher::call("AlignHCenter"):
+                    rhs = Qt::AlignHCenter;
+                    break;
+                case hasher::call("AlignJustify"):
+                    rhs = Qt::AlignJustify;
+                    break;
+                case hasher::call("AlignAbsolute"):
+                    rhs = Qt::AlignAbsolute;
+                    break;
+                case hasher::call("AlignHorizontal_Mask"):
+                    rhs = Qt::AlignHorizontal_Mask;
+                    break;
+                case hasher::call("AlignTop"):
+                    rhs = Qt::AlignTop;
+                    break;
+                case hasher::call("AlignBottom"):
+                    rhs = Qt::AlignBottom;
+                    break;
+                case hasher::call("AlignVCenter"):
+                    rhs = Qt::AlignVCenter;
+                    break;
+                case hasher::call("AlignBaseline"):
+                    rhs = Qt::AlignBaseline;
+                    break;
+                case hasher::call("AlignVertical_Mask"):
+                    rhs = Qt::AlignVertical_Mask;
+                    break;
+                case hasher::call("AlignCenter"):
+                    rhs = Qt::AlignCenter;
+                    break;
+                default:
+                    return false;
+            }
+            return true;
+        }
+    };
+
 // QColor
     template<>
     struct convert<QColor> {
@@ -245,7 +312,7 @@ namespace YAML {
 // TODO: Add the rest of the container classes
 // QLinkedList, QStack, QQueue, QSet, QMultiMap, QHash, QMultiHash, ...
 
-// QThread::Priority
+    // QThread::Priority
     template<>
     struct convert<QThread::Priority> {
         static Node encode(const QThread::Priority &rhs) {

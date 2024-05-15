@@ -17,37 +17,37 @@ VideoWidget::VideoWidget(QWidget *parent)
     auto bbox_config = configs["detection_bounding_box_options"];
     bbox_options = bbox_options
             .shape(bbox_config["shape"].as<DetectionBoundingBoxOptions::Shape>(
-                    DetectionBoundingBoxOptions::DEFAULT_OPTION(shape)))
+                    DEFAULT_PARAM(DetectionBoundingBoxOptions, shape)))
             .rounded_rect_radius_ratio(bbox_config["rounded_rect_radius"].as<qreal>(
-                    DetectionBoundingBoxOptions::DEFAULT_OPTION(rounded_rect_radius_ratio)))
+                    DEFAULT_PARAM(DetectionBoundingBoxOptions, rounded_rect_radius_ratio)))
             .line_width(bbox_config["line_width"].as<qreal>(
-                    DetectionBoundingBoxOptions::DEFAULT_OPTION(line_width)))
+                    DEFAULT_PARAM(DetectionBoundingBoxOptions, line_width)))
             .focus_line_width(bbox_config["focus_line_width"].as<qreal>(
-                    DetectionBoundingBoxOptions::DEFAULT_OPTION(focus_line_width)))
+                    DEFAULT_PARAM(DetectionBoundingBoxOptions, focus_line_width)))
             .fill(bbox_config["fill"].as<bool>(
-                    DetectionBoundingBoxOptions::DEFAULT_OPTION(fill)))
+                    DEFAULT_PARAM(DetectionBoundingBoxOptions, fill)))
             .fill_alpha(bbox_config["fill_alpha"].as<int>(
-                    DetectionBoundingBoxOptions::DEFAULT_OPTION(fill_alpha)))
+                    DEFAULT_PARAM(DetectionBoundingBoxOptions, fill_alpha)))
             .focus_fill_alpha(bbox_config["focus_fill_alpha"].as<int>(
-                    DetectionBoundingBoxOptions::DEFAULT_OPTION(focus_fill_alpha)))
+                    DEFAULT_PARAM(DetectionBoundingBoxOptions, focus_fill_alpha)))
             .show_description(bbox_config["show_description"].as<DetectionBoundingBoxOptions::ShowFlag>(
-                    DetectionBoundingBoxOptions::DEFAULT_OPTION(show_description)))
+                    DEFAULT_PARAM(DetectionBoundingBoxOptions, show_description)))
             .show_confidence(bbox_config["show_confidence"].as<DetectionBoundingBoxOptions::ShowFlag>(
-                    DetectionBoundingBoxOptions::DEFAULT_OPTION(show_confidence)))
+                    DEFAULT_PARAM(DetectionBoundingBoxOptions, show_confidence)))
             .boxed_description(bbox_config["boxed_description"].as<bool>(
-                    DetectionBoundingBoxOptions::DEFAULT_OPTION(boxed_description)))
+                    DEFAULT_PARAM(DetectionBoundingBoxOptions, boxed_description)))
             .font_family(bbox_config["font_family"].as<QString>(
-                    DetectionBoundingBoxOptions::DEFAULT_OPTION(font_family)))
+                    DEFAULT_PARAM(DetectionBoundingBoxOptions, font_family)))
             .font_point_size(bbox_config["font_point_size"].as<int>(
-                    DetectionBoundingBoxOptions::DEFAULT_OPTION(font_point_size)))
+                    DEFAULT_PARAM(DetectionBoundingBoxOptions, font_point_size)))
             .focus_font_point_size(bbox_config["focus_font_point_size"].as<int>(
-                    DetectionBoundingBoxOptions::DEFAULT_OPTION(focus_font_point_size)))
+                    DEFAULT_PARAM(DetectionBoundingBoxOptions, focus_font_point_size)))
             .enable_focus(bbox_config["enable_focus"].as<bool>(
-                    DetectionBoundingBoxOptions::DEFAULT_OPTION(enable_focus)))
+                    DEFAULT_PARAM(DetectionBoundingBoxOptions, enable_focus)))
             .cosmetic(bbox_config["cosmetic"].as<bool>(
-                    DetectionBoundingBoxOptions::DEFAULT_OPTION(cosmetic)))
+                    DEFAULT_PARAM(DetectionBoundingBoxOptions, cosmetic)))
             .antialiasing(bbox_config["antialiasing"].as<bool>(
-                    DetectionBoundingBoxOptions::DEFAULT_OPTION(antialiasing)));
+                    DEFAULT_PARAM(DetectionBoundingBoxOptions, antialiasing)));
     bbox_color_palette = ColorPalette(configs["bbox_color_palette"].as<ColorPalette>(ColorPalette()));
 
     bbox_pool_ = new OverlayGraphicsItemPool<DetectionBoundingBox>(view());

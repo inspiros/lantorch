@@ -38,11 +38,6 @@ namespace ultralytics {
             set_input_shape(input_shape);
         }
 
-        static inline YoloOptions default_instance() noexcept {
-            static const auto inst = YoloOptions();
-            return inst;
-        }
-
         [[nodiscard]] inline cv::Size input_shape() const noexcept {
             return input_shape_;
         }
