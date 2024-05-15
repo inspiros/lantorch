@@ -91,7 +91,7 @@ Comparisons <i>(to be verified)</i>
 
 </table>
 
-[^1]: These graphs are not precise. It assumes that the latency of other elements in the pipeline and cross-thread
+[^1]: These graphs are not precise. They assume that the latency of other elements in the pipeline and cross-thread
 communication is _negligible_.
 
 For the clinical use case in my project, LibTorch is the clear victor after the first bullet point.
