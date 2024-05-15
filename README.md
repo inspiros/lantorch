@@ -8,11 +8,11 @@ As I have found no similar prototype that is publicly available, I want to share
 While it features Yolov8, it is not just another illustration of Yolov8 inferencing on C++.
 
 <p align="center">
-  <img src="data/capture.png" height="360"/>
+  <img src="images/capture.png" height="360"/>
 </p>
 
-The code is extracted from **GastroEye** (another C++ computer-aided endoscopy app I have been working on,
-unable to share sorry).
+The code is extracted from <img src="images/gastroeye_logo.svg" height=16/> (a C++ computer-aided endoscopy app I have
+been working on, unable to share sorry).
 Hence, there could be many unused files that I have yet trimmed.
 
 ## Why not DeepStream?
@@ -33,11 +33,25 @@ Comparisons <i>(to be verified)</i>
 <tr>
 <td>
 
+![DeepStream](images/deepstream.svg) [^1]
+
+</td>
+<td>
+
+![LibTorch](images/libtorch.svg) [^1]
+
+</td>
+</tr>
+
+<tr>
+<td>
+
 - Forced quantization (``TensorRT``) and the loss of performance is sometimes problematic.
     - But fast.
 - Heavy pipeline initialization as models must be loaded during this stage.
 - Not easy to dynamically configured when pipeline started, enabling/disabling requires manipulation of elements
-  (like [this](https://gstreamer.freedesktop.org/documentation/application-development/advanced/pipeline-manipulation.html?gi-language=c#dynamically-changing-the-pipeline)).
+  (
+  like [this](https://gstreamer.freedesktop.org/documentation/application-development/advanced/pipeline-manipulation.html?gi-language=c#dynamically-changing-the-pipeline)).
 - Fixed dense processing or sparse processing (e.g. once every 3 frames).
 - Model outputs are drawn directly on the video, configurations are limited to those provided by the ``gst-nvdsosd``
   element.
@@ -76,6 +90,9 @@ Comparisons <i>(to be verified)</i>
 </tr>
 
 </table>
+
+[^1]: These graphs are not precise. It assumes that the latency of other elements in the pipeline and cross-thread
+communication is _negligible_.
 
 For the clinical use case in my project, LibTorch is the clear victor after the first bullet point.
 Another the pivotal reason I did not list is the familiarity and reliance on the comforts given by
@@ -190,7 +207,8 @@ cmake --build build -j10 --
 
 #### Example 1: Adding a simple classification inference branch
 
-This example assumes that you have a standard ``torch`` classification model [converted to ``.torchscript``](#convert-pre-trained-weights-to-torchscript-format)
+This example assumes that you have a standard ``torch`` classification
+model [converted to ``.torchscript``](#convert-pre-trained-weights-to-torchscript-format)
 format.
 
 First, create a ``ClassificationInferenceWorker`` class that extends ``GstInferenceWorker``, overriding the
@@ -312,7 +330,8 @@ signals:  // maybe you will need these signals
 ```
 
 After that, we need to register a new inference thread to ``MainWindow`` to handle this worker.
-Please examine how I implemented these for Yolo in [src/app/dnn/yolo_inference_worker.h](src/app/dnn/yolo_inference_worker.h)
+Please examine how I implemented these for Yolo
+in [src/app/dnn/yolo_inference_worker.h](src/app/dnn/yolo_inference_worker.h)
 and [src/app/ui/main_window.cpp](src/app/ui/main_window.cpp), and adapt.
 
 _More to be added on demand_
