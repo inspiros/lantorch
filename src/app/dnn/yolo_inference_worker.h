@@ -13,7 +13,6 @@ class YoloInferenceWorker : public GstInferenceWorker {
 Q_OBJECT  // Q_OBJECT does not allow template classes
     using Yolo = ultralytics::Yolo<INFERENCE_ENGINE_LibTorch>;
     Yolo model_;
-
     std::string model_filepath_;
     std::string classes_filepath_;
 
@@ -63,7 +62,7 @@ protected:
         DEBUG_ONLY([&]() {
             time_meter_.reset();
         })
-        auto frame_id = sample.frame_meta()->frame_num;
+        auto frame_id = sample.frame_id();
         auto img = sample.get_image();
 
         DEBUG_ONLY([&]() {

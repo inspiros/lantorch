@@ -16,10 +16,14 @@ typedef struct _GstFrameMeta {
     guint frame_num;
     /** Holds the presentation timestamp (PTS) of the frame. */
     GstClockTime pts;
+    /** Holds the decode timestamp (DTS) of the frame. */
+    GstClockTime dts;
+    /** Holds the duration of the frame. */
+    GstClockTime duration;
     /** Holds the width of the frame. */
-    gint frame_width;
+    gint source_frame_width;
     /** Holds the height of the frame. */
-    gint frame_height;
+    gint source_frame_height;
 } GstFrameMeta;
 
 GType gst_frame_meta_api_get_type();

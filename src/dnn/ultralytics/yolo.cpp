@@ -24,6 +24,18 @@ namespace ultralytics {
     YoloBase::YoloBase(YoloOptions options)
             : options_(options) {}
 
+    YoloVersion YoloBase::version() const noexcept {
+        return version_;
+    }
+
+    void YoloBase::set_options(YoloOptions options) {
+        options_ = options;
+    }
+
+    YoloOptions YoloBase::options() const noexcept {
+        return options_;
+    }
+
     void YoloBase::load_classes(const std::string &classes_filepath) {
         std::ifstream inputFile(classes_filepath);
         if (inputFile.is_open()) {
@@ -33,14 +45,6 @@ namespace ultralytics {
                 classes_.push_back(line);
             inputFile.close();
         }
-    }
-
-    YoloVersion YoloBase::version() const noexcept {
-        return version_;
-    }
-
-    YoloOptions YoloBase::options() const noexcept {
-        return options_;
     }
 
     int YoloBase::num_classes() const noexcept {

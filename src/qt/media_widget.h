@@ -54,6 +54,8 @@ public:
 
 signals:
 
+    void frame_id_changed(unsigned int frame_id);
+
     void frame_changed(const QImage &frame);
 
     void force_aspect_ratio_changed(bool force_aspect_ratio);

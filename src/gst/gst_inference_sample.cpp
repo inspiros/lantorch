@@ -87,6 +87,38 @@ GstFrameMeta *GstInferenceSample::frame_meta() const noexcept {
     return frame_meta_;
 }
 
+guint GstInferenceSample::frame_id() const {
+    if (frame_meta_)
+        return frame_meta_->frame_num;
+    return buf_->offset;
+}
+
+GstClockTime GstInferenceSample::pts() const {
+    if (frame_meta_)
+        return frame_meta_->pts;
+    return buf_->pts;
+}
+
+GstClockTime GstInferenceSample::dts() const {
+    if (frame_meta_)
+        return frame_meta_->dts;
+    return buf_->dts;
+}
+
+GstClockTime GstInferenceSample::duration() const {
+    if (frame_meta_)
+        return frame_meta_->duration;
+    return buf_->duration;
+}
+
+gint GstInferenceSample::source_width() const {
+    return frame_meta_->source_frame_width;
+}
+
+gint GstInferenceSample::source_height() const {
+    return frame_meta_->source_frame_height;
+}
+
 GstInferenceSample GstInferenceSample::to(GstCaps *to_caps) const {
     if (!sample_)
         return *this;

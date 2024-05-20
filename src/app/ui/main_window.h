@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QMainWindow>
+#include <QLabel>
 #include <QPushButton>
 #include <QScopedPointer>
 
@@ -11,9 +12,9 @@
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
-private:
     QPushButton *btn_enable_ai;
     VideoWidget *video_widget;
+    QLabel *time_indicator;
 
     QScopedPointer<GstPipelineManager> pipeline;
     QScopedPointer<GstInferenceQThread> yolo_infer_thread;

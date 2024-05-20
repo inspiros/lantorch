@@ -130,10 +130,8 @@ void GstInferenceWorker::on_stopped() {
     stopped_event_.set();
     unpaused_event_.set();
     app_sink_set_event_.set();
-    if (app_src_set_event_.isSet() && app_src_cb_handlers_[0]) {
-        app_src_need_data_event_.set();
-        disconnect_app_src_cb();
-    }
+    disconnect_app_src_cb();
+    app_src_need_data_event_.set();
     started_event_.set();
     disconnect();
 }
@@ -153,6 +151,7 @@ void GstInferenceWorker::run() {
             app_src_need_data_event_.wait();
         if (should_abort())
             break;
+        update();
         GstSample *sample = NULL;
         {
             QMutexLocker lock(&mutex_);

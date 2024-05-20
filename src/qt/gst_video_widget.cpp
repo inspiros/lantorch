@@ -11,32 +11,32 @@ GstVideoWidget::GstVideoWidget(QWidget *parent)
 }
 
 GstVideoWidget::~GstVideoWidget() {
-    remove_frame_size_probe();
+    remove_probes();
 }
 
 void GstVideoWidget::set_qwidget5videosink(GstElement *sink) {
     if (!g_str_equal(gst_object_get_name(GST_OBJECT(gst_element_get_factory(sink))), "qwidget5videosink"))
         g_error("sink is not an instance of qwidget5videosink");
-    remove_frame_size_probe();
+    remove_probes();
     sink_ = sink;
     g_object_set(G_OBJECT(sink), "widget", this, NULL);
     update_force_aspect_ratio();
-    add_frame_size_probe();
+    add_probes();
     emit sink_changed(sink);
 }
 
 void GstVideoWidget::set_overlay_videosink(GstElement *sink) {
     auto *overlay = GST_VIDEO_OVERLAY(sink);
-    remove_frame_size_probe();
+    remove_probes();
     sink_ = sink;
     gst_video_overlay_set_window_handle(overlay, this->winId());
     update_force_aspect_ratio();
-    add_frame_size_probe();
+    add_probes();
     emit sink_changed(sink);
 }
 
 void GstVideoWidget::remove_sink() {
-    remove_frame_size_probe();
+    remove_probes();
     sink_ = NULL;
 }
 
@@ -48,9 +48,21 @@ bool GstVideoWidget::has_sink() const {
     return sink_;
 }
 
-void GstVideoWidget::add_frame_size_probe() {
+void GstVideoWidget::add_probes() {
     if (has_sink()) {
-        frame_size_probe_id_ = gst_element_pad_add_probe(
+        // frame id probe
+        probes_ids_[0] = gst_element_pad_add_probe(
+                sink_, "sink", GST_PAD_PROBE_TYPE_BUFFER,
+                [=](GstPad *pad, GstPadProbeInfo *info, gpointer) -> GstPadProbeReturn {
+                    GstBuffer *buf = gst_pad_probe_info_get_buffer(info);
+                    if (buf) {
+                        emit frame_id_changed(buf->offset);
+                        emit frame_pts_changed(buf->pts);
+                    }
+                    return GST_PAD_PROBE_OK;
+                });
+        // frame size probe
+        probes_ids_[1] = gst_element_pad_add_probe(
                 sink_, "sink", GST_PAD_PROBE_TYPE_BUFFER,
                 [=](GstPad *pad, GstPadProbeInfo *info, gpointer) -> GstPadProbeReturn {
                     GstCaps *caps = gst_pad_get_current_caps(pad);
@@ -65,15 +77,17 @@ void GstVideoWidget::add_frame_size_probe() {
     }
 }
 
-void GstVideoWidget::remove_frame_size_probe() {
-    if (frame_size_probe_id_ && has_sink()) {
+void GstVideoWidget::remove_probes() {
+    if (probes_ids_[0] && has_sink()) {
         try {
-            if (GST_OBJECT_REFCOUNT(GST_OBJECT_CAST(sink_)))
-                gst_element_pad_remove_probe(sink_, "sink", frame_size_probe_id_);
+            if (GST_OBJECT_REFCOUNT(GST_OBJECT_CAST(sink_))) {
+                gst_element_pad_remove_probe(sink_, "sink", probes_ids_[0]);
+                gst_element_pad_remove_probe(sink_, "sink", probes_ids_[1]);
+            }
         } catch (...) {
         }
     }
-    frame_size_probe_id_ = 0;
+    probes_ids_ = {0, 0};
 }
 
 void GstVideoWidget::update_force_aspect_ratio() {

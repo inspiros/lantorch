@@ -1,4 +1,4 @@
-<img style="float: left;" src="resources/lantorch.svg" height=48> LanTorch: Qt+Gstreamer+LibTorch Example App
+<img style="float: left;" src="resources/lantorch.svg" height=48> Qt+Gstreamer+LibTorch Example App
 ======
 [![GitHub](https://img.shields.io/github/license/inspiros/lantorch)](LICENSE.txt)
 
@@ -104,6 +104,7 @@ Note that we still have full access to gstreamer and its plugins (including Deep
 ### Operating System & Tools
 
 - **Linux-based OS** _(preferably Ubuntu 22.04, no time to make it run on Windows but not impossible)_
+- **C++17** compiler
 - [CMake](https://cmake.org/download/)
 
 ### Libraries
@@ -111,12 +112,7 @@ Note that we still have full access to gstreamer and its plugins (including Deep
 - [yaml-cpp](https://github.com/jbeder/yaml-cpp)
 - [fmt](https://github.com/fmtlib/fmt)
 - [gstreamer](https://gstreamer.freedesktop.org/documentation/installing/on-linux.html?gi-language=c)
-  and plugins:
-    - [DeepStream SDK](https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Quickstart.html)
-      _(currently only used for tagging and other elements)_ and its dependencies listed in the link:
-        - NVIDIA driver
-        - CUDA
-        - TensorRT
+  and plugins of your choice
 - [Qt5](https://wiki.qt.io/Install_Qt_5_on_Ubuntu)
     - [Qt5Gstreamer](https://github.com/GStreamer/qt-gstreamer): _(deprecated/unmaintained)_: for ``qwidget5videosink``
     - [qdarkstyle](https://github.com/ColinDuquesnoy/QDarkStyleSheet):
@@ -129,14 +125,14 @@ Note that we still have full access to gstreamer and its plugins (including Deep
 
 #### Optional:
 
+- [DeepStream SDK](https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Quickstart.html)
+  _(currently only used its other elements)_ and its dependencies listed in the link:
+    - NVIDIA driver
+    - CUDA
+    - TensorRT
 - [PillowResize](https://github.com/zurutech/pillow-resize): This allows the resize transform in
   ``dnn/torchvision/transforms.h`` to be identical to that of ``torchvision.transforms`` in python, but with performance
   tradeoff.
-
-#### Unplanned/Deprecated:
-
-- [nnstreamer](https://github.com/nnstreamer/nnstreamer) _(premature)_: An alternative of DeepStream with support for
-  ``torchscript`` backend.
 
 ## Getting Started
 
@@ -172,8 +168,8 @@ Note that in stem bin's description, there are some required named elements:
 
 - ``tee name=inference_tee``: the fork point for all inference bins added later.
 - ``qwidget5videosink name=display_sink``: video output for Qt.
-- An element with name similar to that defined in ``app.gst.pipeline.frame_meta_probe.element``, whose pad we will
-  plug a probe to register frame metas.
+- _(Partly optional)_ An element with name similar to that defined in ``app.gst.pipeline.frame_meta_probe.element``,
+  whose pad we will plug a probe to register frame metas.
 
 ### Installation
 
@@ -281,6 +277,15 @@ protected:
     }
 
     /*
+     * This method is executed during the inference loop, before forward.
+     * 
+     * An example usage is when we want to update model's weights/hyperparameters.
+     */
+    void update() override {
+        // Nothing to do
+    }
+
+    /*
      * This method is executed during the inference loop and must be overridden.
      * 
      * It optionally returns a GstInferenceSample in case of shortcutting pipelines,
@@ -288,8 +293,8 @@ protected:
      * just return std::nullopt.
      */
     std::optional<GstInferenceSample> forward(const GstInferenceSample &sample) override {
-        auto frame_id = sample.frame_meta()->frame_num;
-        auto img = sample.get_image();
+        auto frame_id = sample.frame_id();
+        auto img = sample.get_image();  // cv::Mat
 
         at::NoGradGuard g;
         auto x = transform->forward(img).to(device, dtype);
@@ -316,6 +321,7 @@ protected:
      * This method is executed when the thread terminates.
      */
     void cleanup() override {
+        // Nothing to do
     }
 
 signals:  // maybe you will need these signals
@@ -337,6 +343,12 @@ and [src/app/ui/main_window.cpp](src/app/ui/main_window.cpp), and adapt.
 _More to be added on demand_
 
 This project is just meant to be an example, and the paradigm is not very well-designed, please alter to your needs.
+
+## Acknowledgements
+
+This is a derivative of my work on the project
+_"Research and Develop Intelligent Diagnostic Assistance System for Upper Gastrointestinal Endoscopy Images"_
+funded by Vietnam Ministry of Science and Technology under grant No. KC-4.0-17/19-25.
 
 ## License
 

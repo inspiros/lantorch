@@ -60,6 +60,18 @@ public:
 
     [[nodiscard]] GstFrameMeta *frame_meta() const noexcept;
 
+    [[nodiscard]] guint frame_id() const;
+
+    [[nodiscard]] GstClockTime pts() const;
+
+    [[nodiscard]] GstClockTime dts() const;
+
+    [[nodiscard]] GstClockTime duration() const;
+
+    [[nodiscard]] gint source_width() const;
+
+    [[nodiscard]] gint source_height() const;
+
     [[nodiscard]] GstInferenceSample to(GstCaps *to_caps) const;
 
     [[nodiscard]] GstInferenceSample to(GstVideoFormat format) const;

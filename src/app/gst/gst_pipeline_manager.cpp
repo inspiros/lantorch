@@ -53,11 +53,13 @@ void GstPipelineManager::init_pipeline() {
     add_bin("stem", stem_bin);
 
     /* Add probes */
-    auto *frame_meta_add_probe = new GstFrameMetaAddProbe();
-    frame_meta_add_probe->add_on(
-            get_element(
-                    pipeline_config["frame_meta_probe"]["element"].as<std::string>().c_str()),
-            pipeline_config["frame_meta_probe"]["pad"].as<std::string>().c_str());
+    if (pipeline_config["frame_meta_probe"]["element"].IsDefined()) {
+        auto *frame_meta_add_probe = new GstFrameMetaAddProbe();
+        frame_meta_add_probe->add_on(
+                get_element(
+                        pipeline_config["frame_meta_probe"]["element"].as<std::string>().c_str()),
+                pipeline_config["frame_meta_probe"]["pad"].as<std::string>().c_str());
+    }
 }
 
 GstElement *GstPipelineManager::pipeline() const noexcept {

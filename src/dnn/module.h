@@ -90,8 +90,8 @@ public:
 
     inline void to(at::Device device, at::ScalarType dtype, bool non_blocking = false) {
         net.to(device, dtype, non_blocking);
-        this->device_ = device;
-        this->dtype_ = dtype;
+        device_ = device;
+        dtype_ = dtype;
     }
 
     inline void to(at::ScalarType dtype, bool non_blocking = false) {
@@ -101,17 +101,17 @@ public:
 
     inline void to(at::Device device, bool non_blocking = false) {
         net.to(device, non_blocking);
-        this->device_ = device;
+        device_ = device;
     }
 
     inline void cpu(bool non_blocking = false) {
         net.to(at::kCPU, non_blocking);
-        this->device_ = at::kCPU;
+        device_ = at::kCPU;
     }
 
     inline void cuda(bool non_blocking = false) {
         net.to(at::kCUDA, non_blocking);
-        this->device_ = at::kCUDA;
+        device_ = at::kCUDA;
     }
 
     inline void train(bool on = true) {

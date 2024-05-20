@@ -1,13 +1,16 @@
 #pragma once
 
 #include "MediaWidget"
+#include "gst_types_registration.h"
+
+#include <array>
 
 #include <gst/gst.h>
 
 class GstVideoWidget : public MediaWidget {
 Q_OBJECT
     GstElement *sink_;
-    gulong frame_size_probe_id_ = 0;
+    std::array<gulong, 2> probes_ids_ = {0, 0};
 
 public:
     explicit GstVideoWidget(QWidget *parent = nullptr);
@@ -27,10 +30,12 @@ public:
 signals:
     void sink_changed(GstElement *sink);
 
-private:
-    void add_frame_size_probe();
+    void frame_pts_changed(GstClockTime pts);
 
-    void remove_frame_size_probe();
+private:
+    void add_probes();
+
+    void remove_probes();
 
     void update_force_aspect_ratio();
 };

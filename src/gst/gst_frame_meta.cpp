@@ -5,8 +5,10 @@ namespace {
         auto *frame_meta = (GstFrameMeta *) meta;
         frame_meta->frame_num = 0;
         frame_meta->pts = GST_CLOCK_TIME_NONE;
-        frame_meta->frame_width = 0;
-        frame_meta->frame_height = 0;
+        frame_meta->dts = GST_CLOCK_TIME_NONE;
+        frame_meta->duration = GST_CLOCK_TIME_NONE;
+        frame_meta->source_frame_width = 0;
+        frame_meta->source_frame_height = 0;
         return TRUE;
     }
 
@@ -21,8 +23,10 @@ namespace {
 
         dest_frame_meta->frame_num = src_frame_meta->frame_num;
         dest_frame_meta->pts = src_frame_meta->pts;
-        dest_frame_meta->frame_width = src_frame_meta->frame_width;
-        dest_frame_meta->frame_height = src_frame_meta->frame_height;
+        dest_frame_meta->dts = src_frame_meta->dts;
+        dest_frame_meta->duration = src_frame_meta->duration;
+        dest_frame_meta->source_frame_width = src_frame_meta->source_frame_width;
+        dest_frame_meta->source_frame_height = src_frame_meta->source_frame_height;
         return TRUE;
     }
 
@@ -73,7 +77,9 @@ GstPadProbeReturn GstFrameMetaAddProbe::call(GstPad *pad, GstPadProbeInfo *info,
     /* Add metadata */
     frame_meta->frame_num = frame_count++;
     frame_meta->pts = GST_BUFFER_PTS(buf);
-    frame_meta->frame_width = width;
-    frame_meta->frame_height = height;
+    frame_meta->dts = GST_BUFFER_DTS(buf);
+    frame_meta->duration = GST_BUFFER_DURATION(buf);
+    frame_meta->source_frame_width = width;
+    frame_meta->source_frame_height = height;
     return GST_PAD_PROBE_OK;
 }

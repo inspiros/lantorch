@@ -1,6 +1,6 @@
 #include "main_window.h"
 
-#include <fmt/core.h>
+#include <fmt/chrono.h>
 
 #undef slots
 
@@ -39,11 +39,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
         video_widget->initOpenGLViewport();
     video_widget->setMinimumSize(100, 100);
 
+    time_indicator = new QLabel(this);
+    time_indicator->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
+    time_indicator->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+
     auto *main_widget = this->centralWidget() ?: new QWidget(this);
     auto *main_layout = new QVBoxLayout(main_widget);
     main_widget->setLayout(main_layout);
     main_layout->addWidget(btn_enable_ai);
     main_layout->addWidget(video_widget);
+    main_layout->addWidget(time_indicator);
     setCentralWidget(main_widget);
 
     /* Pipeline */
@@ -73,6 +78,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     yolo_infer_thread->start(yolo_infer_config["priority"].as<QThread::Priority>(QThread::NormalPriority));
 
     /* Signals */
+    QObject::connect(video_widget, &VideoWidget::frame_pts_changed, this, [this](GstClockTime pts) {
+        auto rounded_pts = std::chrono::floor<std::chrono::milliseconds>(std::chrono::nanoseconds(pts));
+        time_indicator->setText(QString::fromStdString(fmt::format("{:%H:%M:%S}", rounded_pts)));
+    });
+
     QObject::connect(  // yolo detector
             yolo_infer_worker.data(),
             &YoloInferenceWorker::new_result,

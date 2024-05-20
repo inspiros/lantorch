@@ -21,17 +21,21 @@ app:
           h264parse name=parser ! nvv4l2decoder name=decoder ! nvvideoconvert name=nvconverter ! tee name=inference_tee
           inference_tee. ! queue name=display_queue leaky=downstream !
           nvvideoconvert ! video/x-raw,format=(string)RGB ! videorate ! qwidget5videosink name=display_sink force-aspect-ratio=true
-#        description: >-
-#          v4l2src device=/dev/video0 ! video/x-raw,format=YUY2 ! videoconvert ! video/x-raw,format=NV12 !
-#          nvvideoconvert name=decoder ! tee name=inference_tee
-#          inference_tee. ! queue name=display_queue leaky=downstream !
-#          nvvideoconvert ! video/x-raw,format=(string)RGB ! videorate ! qwidget5videosink name=display_sink force-aspect-ratio=true
-      inference_bin:
-        description: >-
-          queue name={bin_name}_queue ! appsink name={bin_name}_sink drop=true max-buffers=1
       frame_meta_probe:
         element: decoder
         pad: src
+#        description: >-
+#          v4l2src device=/dev/video0 ! video/x-raw,format=YUY2 ! videoconvert ! video/x-raw,format=NV12 !
+#          nvvideoconvert name=nvconverter ! tee name=inference_tee
+#          inference_tee. ! queue name=display_queue leaky=downstream !
+#          nvvideoconvert ! video/x-raw,format=(string)RGB ! videorate ! qwidget5videosink name=display_sink force-aspect-ratio=true
+#      frame_meta_probe:
+#        element: nvconverter
+#        pad: src
+
+      inference_bin:
+        description: >-
+          queue name={bin_name}_queue ! appsink name={bin_name}_sink drop=true max-buffers=1
 
   ui:
     style_sheet_filepath: qdarkstyle/dark/darkstyle.qss

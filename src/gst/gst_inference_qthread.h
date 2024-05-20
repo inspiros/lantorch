@@ -96,11 +96,14 @@ protected:
     bool should_abort();
 
     // these methods are to be implemented by subclasses
-    virtual std::optional<GstInferenceSample> forward(const GstInferenceSample &sample) {
-        throw std::not_implemented_error();
+    virtual void setup() {
     }
 
-    virtual void setup() {
+    virtual void update() {
+    }
+
+    virtual std::optional<GstInferenceSample> forward(const GstInferenceSample &sample) {
+        throw std::not_implemented_error();
     }
 
     virtual void cleanup() {

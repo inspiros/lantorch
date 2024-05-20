@@ -135,8 +135,6 @@ namespace ultralytics {
                 "cell phone", "microwave", "oven", "toaster", "sink", "refrigerator", "book",
                 "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"};
 
-        void load_classes(const std::string &classes_filepath);
-
     public:
         YoloBase() = default;
 
@@ -144,7 +142,11 @@ namespace ultralytics {
 
         [[nodiscard]] YoloVersion version() const noexcept;
 
+        void set_options(YoloOptions options);
+
         [[nodiscard]] YoloOptions options() const noexcept;
+
+        void load_classes(const std::string &classes_filepath);
 
         [[nodiscard]] int num_classes() const noexcept;
 
