@@ -189,6 +189,7 @@ namespace YAML {
                 case hasher::call("torch.bits16"):
                     rhs = at::ScalarType::Bits16;
                     break;
+#if TORCH_VERSION_MAJOR >= 2 && TORCH_VERSION_MINOR >=3
                 case hasher::call("Float8_e5m2"):
                 case hasher::call("float8_e5m2"):
                 case hasher::call("torch.float8_e5m2"):
@@ -199,6 +200,7 @@ namespace YAML {
                 case hasher::call("torch.float8_e4m3fn"):
                     rhs = at::ScalarType::Float8_e4m3fn;
                     break;
+#endif
                 default:
                     return false;
             }

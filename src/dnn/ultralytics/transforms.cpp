@@ -190,21 +190,21 @@ namespace ultralytics {
                                   "prediction must be 2D or single-batched 3D prediction. "
                                   "Got prediction.ndimension=",
                                   prediction.ndimension())
-                auto prediction_c = prediction.cpu();
+                auto prediction_c = prediction.to(at::kCPU, at::kDouble);
                 if (batched)
                     prediction_c.squeeze_(0);
 
                 std::vector<Detection> detections;
                 detections.reserve(prediction_c.size(0));
-                auto tensor_accessor = prediction_c.accessor<float, 2>();
+                auto prediction_accessor = prediction_c.accessor<double, 2>();
                 for (int idx = 0; idx < prediction_c.size(0); idx++) {
                     Detection det;
-                    double x1 = tensor_accessor[idx][0];
-                    double y1 = tensor_accessor[idx][1];
-                    double x2 = tensor_accessor[idx][2];
-                    double y2 = tensor_accessor[idx][3];
-                    det.label_id = static_cast<int>(tensor_accessor[idx][5]);
-                    det.confidence = tensor_accessor[idx][4];
+                    double x1 = prediction_accessor[idx][0];
+                    double y1 = prediction_accessor[idx][1];
+                    double x2 = prediction_accessor[idx][2];
+                    double y2 = prediction_accessor[idx][3];
+                    det.label_id = static_cast<int>(prediction_accessor[idx][5]);
+                    det.confidence = prediction_accessor[idx][4];
                     det.bbox = cv::Rect2d(x1, y1, x2 - x1, y2 - y1);
 
                     detections.push_back(det);
@@ -220,22 +220,22 @@ namespace ultralytics {
                                   "prediction must be 2D or single-batched 3D prediction. "
                                   "Got prediction.ndimension=",
                                   prediction.ndimension())
-                auto prediction_c = prediction.cpu();
+                auto prediction_c = prediction.to(at::kCPU, at::kDouble);
                 if (batched)
                     prediction_c.squeeze_(0);
 
                 std::vector<Detection> detections;
                 detections.reserve(prediction_c.size(0));
-                auto tensor_accessor = prediction_c.accessor<float, 2>();
+                auto prediction_accessor = prediction_c.accessor<double, 2>();
                 for (int idx = 0; idx < prediction_c.size(0); idx++) {
                     Detection det;
-                    double x1 = tensor_accessor[idx][0];
-                    double y1 = tensor_accessor[idx][1];
-                    double x2 = tensor_accessor[idx][2];
-                    double y2 = tensor_accessor[idx][3];
-                    det.label_id = static_cast<int>(tensor_accessor[idx][5]);
+                    double x1 = prediction_accessor[idx][0];
+                    double y1 = prediction_accessor[idx][1];
+                    double x2 = prediction_accessor[idx][2];
+                    double y2 = prediction_accessor[idx][3];
+                    det.label_id = static_cast<int>(prediction_accessor[idx][5]);
                     det.label = class_names.at(det.label_id);
-                    det.confidence = tensor_accessor[idx][4];
+                    det.confidence = prediction_accessor[idx][4];
                     det.bbox = cv::Rect2d(x1, y1, x2 - x1, y2 - y1);
 
                     detections.push_back(det);

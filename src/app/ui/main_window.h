@@ -1,8 +1,10 @@
 #pragma once
 
+#include <QComboBox>
 #include <QMainWindow>
 #include <QLabel>
 #include <QPushButton>
+#include <QSlider>
 #include <QScopedPointer>
 
 #include "../gst/gst_pipeline_manager.h"
@@ -12,7 +14,16 @@
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
-    QPushButton *btn_enable_ai;
+    QPushButton *toggle_ai_btn;
+    QLabel *score_thresh_indicator;
+    QLabel *nms_thresh_indicator;
+    QSlider *score_thresh_slider;
+    QSlider *nms_thresh_slider;
+    QLabel *dtype_label;
+    QLabel *device_label;
+    QComboBox *dtype_cbb;
+    QComboBox *device_cbb;
+
     VideoWidget *video_widget;
     QLabel *time_indicator;
 
@@ -39,4 +50,6 @@ public slots:
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;
+
+    void showEvent(QShowEvent *event) override;
 };

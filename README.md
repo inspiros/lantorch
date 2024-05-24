@@ -1,6 +1,7 @@
 <img style="float: left;" src="resources/lantorch.svg" height=48> Qt+Gstreamer+LibTorch Example App
 ======
-[![GitHub](https://img.shields.io/github/license/inspiros/lantorch)](LICENSE.txt)
+[![Cpp Version](https://img.shields.io/badge/C++-17-blue.svg?style=flat&logo=c%2B%2B)](#requirements)
+[![GitHub License](https://img.shields.io/github/license/inspiros/lantorch)](LICENSE.txt)
 
 This repo contains an example of mixing Qt with Gstreamer and LibTorch for video processing.
 As I have found no similar prototype that is publicly available, I want to share this.
@@ -105,34 +106,49 @@ Note that we still have full access to gstreamer and its plugins (including Deep
 
 - **Linux-based OS** _(preferably Ubuntu 22.04, no time to make it run on Windows but not impossible)_
 - **C++17** compiler
-- [CMake](https://cmake.org/download/)
+- [CMake>=3.25](https://cmake.org/download/)
 
 ### Libraries
 
 - [yaml-cpp](https://github.com/jbeder/yaml-cpp)
 - [fmt](https://github.com/fmtlib/fmt)
-- [gstreamer](https://gstreamer.freedesktop.org/documentation/installing/on-linux.html?gi-language=c)
+- [gstreamer>=1.20](https://gstreamer.freedesktop.org/documentation/installing/on-linux.html?gi-language=c)
   and plugins of your choice
-- [Qt5](https://wiki.qt.io/Install_Qt_5_on_Ubuntu)
+- [Qt5>=5.15](https://wiki.qt.io/Install_Qt_5_on_Ubuntu)
     - [Qt5Gstreamer](https://github.com/GStreamer/qt-gstreamer): _(deprecated/unmaintained)_: for ``qwidget5videosink``
     - [qdarkstyle](https://github.com/ColinDuquesnoy/QDarkStyleSheet):
       _(already downloaded and placed in [resources/qdarkstyle](resources/qdarkstyle) but you may delete)_
-- [LibTorch](https://pytorch.org/get-started/locally/): _(Tested for 2.3.0 but not sure about the lowest possible
-  version)_
+- [LibTorch>=2.0.0](https://pytorch.org/get-started/locally/): _(not sure about the lowest possible version)_
 - [OpenCV](https://docs.opencv.org/4.x/d2/de6/tutorial_py_setup_in_ubuntu.html):
   _(Highly recommended to install from source **the latest possible version** if you plan to use the ``opencv2/dnn``
   submodule for inferencing on cuda device)_
 
+Most of these can be effortlessly installed using ``sudo apt install`` in Ubuntu 22.04.
+Otherwise, compiling from source is necessary and it may cause true headache.
+
 #### Optional:
 
 - [DeepStream SDK](https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Quickstart.html)
-  _(currently only used its other elements)_ and its dependencies listed in the link:
+  _(currently only **partially optional** as we use its plugin elements in the pipeline[^2] in
+  [``resources/configs.yaml``](resources/configs.yaml))_ and its dependencies listed in the link:
     - NVIDIA driver
     - CUDA
     - TensorRT
 - [PillowResize](https://github.com/zurutech/pillow-resize): This allows the resize transform in
   ``dnn/torchvision/transforms.h`` to be identical to that of ``torchvision.transforms`` in python, but with performance
   tradeoff.
+
+[^2]: ``nvv4l2decoder`` allows us to modify buffers so that we can insert frame metadata via probe,
+while ``avdec_h264`` doesn't. This is a shortcoming that needs to be addressed.
+
+    However, without frame metadata (``frame_id``), a DeepStream-free pipeline like this one is fully functional:
+
+    ```
+    filesrc location=../data/240p1.mp4 ! qtdemux name=demuxer demuxer.video_0 !
+    h264parse ! avdec_h264 name=decoder ! videoconvert ! tee name=inference_tee
+    inference_tee. ! queue name=display_queue leaky=downstream !
+    videoconvert ! video/x-raw,format=(string)RGB ! videorate ! qwidget5videosink name=display_sink force-aspect-ratio=true
+    ```
 
 ## Getting Started
 
@@ -189,9 +205,16 @@ yolo export model=yolov8s.pt format=torchscript device=cuda
 
 #### Compile and run
 
-Make sure all the dependencies are installed.
-If you downloaded LibTorch from https://pytorch.org/get-started/locally/, before running CMake, you need to define
-``Torch_DIR`` environment variable pointing to the extracted ``libtorch`` directory.
+Make sure all the dependencies are installed. For LibTorch, you will need to define ``Torch_DIR`` environment variable:
+
+- If you downloaded LibTorch ABI from https://pytorch.org/get-started/locally/, set ``Torch_DIR`` pointing to the
+  extracted ``libtorch`` directory.
+- If you have a ``torch`` installed for Python, set ``Torch_DIR`` to its site package's location
+  (which can be retrieved using ``pip show torch | grep Location``):
+  ```
+  export Torch_DIR=$HOME/.local/lib/python3.10/site-packages/torch/
+  ```
+
 Then, create a ``build`` folder and execute the standard CMake commands:
 
 ```
@@ -208,7 +231,7 @@ model [converted to ``.torchscript``](#convert-pre-trained-weights-to-torchscrip
 format.
 
 First, create a ``ClassificationInferenceWorker`` class that extends ``GstInferenceWorker``, overriding the
-``setup()``, ``forward(const GstInferenceSample &)``, and ``cleanup()`` methods.
+``setup()``, ``update()``, ``forward(const GstInferenceSample &)``, and ``cleanup()`` methods.
 All these methods are to be executed on a separate thread.
 
 ```c++
@@ -337,8 +360,8 @@ signals:  // maybe you will need these signals
 
 After that, we need to register a new inference thread to ``MainWindow`` to handle this worker.
 Please examine how I implemented these for Yolo
-in [src/app/dnn/yolo_inference_worker.h](src/app/dnn/yolo_inference_worker.h)
-and [src/app/ui/main_window.cpp](src/app/ui/main_window.cpp), and adapt.
+in [src/app/dnn/yolo_inference_worker.cpp](src/app/dnn/yolo_inference_worker.cpp)
+& [src/app/ui/main_window.cpp](src/app/ui/main_window.cpp), and adapt.
 
 _More to be added on demand_
 
@@ -348,8 +371,8 @@ This project is just meant to be an example, and the paradigm is not very well-d
 
 This is a derivative of my work on the project
 _"Research and Develop Intelligent Diagnostic Assistance System for Upper Gastrointestinal Endoscopy Images"_
-funded by Vietnam Ministry of Science and Technology under grant No. KC-4.0-17/19-25.
+funded by the Vietnam Ministry of Science and Technology under grant No. KC-4.0-17/19-25.
 
 ## License
 
-The code is released under the MIT license, feel free to do anything. See [`LICENSE.txt`](LICENSE.txt) for details.
+The code is released under the MIT license, feel free to do anything. See [``LICENSE.txt``](LICENSE.txt) for details.

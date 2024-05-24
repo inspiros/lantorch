@@ -10,6 +10,9 @@ file(GLOB_RECURSE ALL_SOURCES ${ALL_SOURCES} src/*)
 add_executable(${PROJECT_NAME} ${ALL_SOURCES})
 include_directories(src)
 
+# pthread (sometimes needed)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+
 # yaml-cpp
 find_package(yaml-cpp REQUIRED)
 
@@ -29,7 +32,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         ${OPENGL_LIBRARIES})
 
 # qt
-find_package(Qt5 COMPONENTS
+find_package(Qt5 5.15 COMPONENTS
         Core
         Gui
         Widgets
@@ -50,16 +53,14 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 
 # gst
 find_package(PkgConfig REQUIRED)
-pkg_search_module(gstreamer REQUIRED IMPORTED_TARGET gstreamer-1.0>=1.4)
-pkg_search_module(gstreamer-sdp REQUIRED IMPORTED_TARGET gstreamer-sdp-1.0>=1.4)
-pkg_search_module(gstreamer-app REQUIRED IMPORTED_TARGET gstreamer-app-1.0>=1.4)
-pkg_search_module(gstreamer-video REQUIRED IMPORTED_TARGET gstreamer-video-1.0>=1.4)
+pkg_search_module(gstreamer REQUIRED IMPORTED_TARGET gstreamer-1.0>=1.20)
+pkg_search_module(gstreamer-app REQUIRED IMPORTED_TARGET gstreamer-app-1.0>=1.20)
+pkg_search_module(gstreamer-video REQUIRED IMPORTED_TARGET gstreamer-video-1.0>=1.20)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${GSTREAMER_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PRIVATE
         PkgConfig::gstreamer
-        PkgConfig::gstreamer-sdp
         PkgConfig::gstreamer-app
         PkgConfig::gstreamer-video
 )
@@ -77,7 +78,7 @@ if (DEFINED ENV{Torch_DIR})
     string(REPLACE ":" ";" CMAKE_PREFIX_PATH "$ENV{CMAKE_PREFIX_PATH}")
     list(APPEND CMAKE_PREFIX_PATH $ENV{Torch_DIR})
 endif ()
-find_package(Torch REQUIRED)
+find_package(Torch 2.0.0 REQUIRED)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${TORCH_INCLUDE_DIRS})

@@ -1,11 +1,10 @@
 #pragma once
 
 #include "std/lexical_cast.h"
-#include "std/private_access.h"
 
 #include <yaml-cpp/yaml.h>
 
-ACCESS_PRIVATE_FUN(YAML::Node, void(const char *), Assign)
+#include "node.h"
 
 namespace YAML {
     template<typename T>

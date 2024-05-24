@@ -96,7 +96,7 @@ public:
 
     inline void to(at::ScalarType dtype, bool non_blocking = false) {
         net.to(dtype, non_blocking);
-        this->dtype_ = dtype;
+        dtype_ = dtype;
     }
 
     inline void to(at::Device device, bool non_blocking = false) {

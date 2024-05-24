@@ -1,7 +1,6 @@
 #include "gst_inference_qthread.h"
 
 #include <QTimer>
-#include <QDebug>
 
 GstInferenceWorker::GstInferenceWorker(GstElement *app_sink, GstElement *app_src, GstVideoFormat format,
                                        QObject *parent)

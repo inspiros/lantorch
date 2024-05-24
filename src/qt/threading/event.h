@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QDeadlineTimer>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QWaitCondition>

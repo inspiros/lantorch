@@ -30,7 +30,6 @@ int main(int argc, char *argv[]) {
 
     MainWindow main_window;
     main_window.setStyleSheet(style_sheet);
-    main_window.reset();
     main_window.show();
 
     if (!main_window.isFullScreen())

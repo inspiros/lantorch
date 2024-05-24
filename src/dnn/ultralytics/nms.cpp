@@ -57,6 +57,50 @@ namespace ultralytics {
                 pred.index({at::indexing::Ellipsis, 1}).add_(-dh);
                 return pred;
             }
+
+            template<typename scalar_t>
+            C10_ALWAYS_INLINE int64_t nms_kernel(int64_t ndets,
+                                                 uint8_t *suppressed,
+                                                 int64_t *keep,
+                                                 const int64_t *order,
+                                                 scalar_t *x1,
+                                                 scalar_t *y1,
+                                                 scalar_t *x2,
+                                                 scalar_t *y2,
+                                                 scalar_t *areas,
+                                                 scalar_t iou_threshold) {
+                int64_t num_to_keep = 0;
+
+                for (int64_t _i = 0; _i < ndets; _i++) {
+                    auto i = order[_i];
+                    if (suppressed[i] == 1)
+                        continue;
+                    keep[num_to_keep++] = i;
+                    scalar_t ix1 = x1[i];
+                    scalar_t iy1 = y1[i];
+                    scalar_t ix2 = x2[i];
+                    scalar_t iy2 = y2[i];
+                    scalar_t iarea = areas[i];
+
+                    for (int64_t _j = _i + 1; _j < ndets; _j++) {
+                        auto j = order[_j];
+                        if (suppressed[j] == 1)
+                            continue;
+                        scalar_t xx1 = std::max(ix1, x1[j]);
+                        scalar_t yy1 = std::max(iy1, y1[j]);
+                        scalar_t xx2 = std::min(ix2, x2[j]);
+                        scalar_t yy2 = std::min(iy2, y2[j]);
+
+                        scalar_t w = std::max(static_cast<scalar_t>(0), xx2 - xx1);
+                        scalar_t h = std::max(static_cast<scalar_t>(0), yy2 - yy1);
+                        scalar_t inter = w * h;
+                        scalar_t ovr = inter / (iarea + areas[j] - inter);
+                        if (ovr > iou_threshold)
+                            suppressed[j] = 1;
+                    }
+                }
+                return num_to_keep;
+            }
         }
 
         // Reference: https://github.com/pytorch/vision/blob/main/torchvision/csrc/ops/cpu/nms_kernel.cpp
@@ -81,45 +125,19 @@ namespace ultralytics {
             at::Tensor suppressed_t = at::zeros({ndets}, bboxes.options().dtype(at::kByte));
             at::Tensor keep_t = at::zeros({ndets}, bboxes.options().dtype(at::kLong));
 
-            auto suppressed = suppressed_t.data_ptr<uint8_t>();
-            auto keep = keep_t.data_ptr<int64_t>();
-            auto order = order_t.data_ptr<int64_t>();
-            auto x1 = x1_t.data_ptr<float>();
-            auto y1 = y1_t.data_ptr<float>();
-            auto x2 = x2_t.data_ptr<float>();
-            auto y2 = y2_t.data_ptr<float>();
-            auto areas = areas_t.data_ptr<float>();
-
-            int64_t num_to_keep = 0;
-
-            for (int64_t _i = 0; _i < ndets; _i++) {
-                auto i = order[_i];
-                if (suppressed[i] == 1)
-                    continue;
-                keep[num_to_keep++] = i;
-                auto ix1 = x1[i];
-                auto iy1 = y1[i];
-                auto ix2 = x2[i];
-                auto iy2 = y2[i];
-                auto iarea = areas[i];
-
-                for (int64_t _j = _i + 1; _j < ndets; _j++) {
-                    auto j = order[_j];
-                    if (suppressed[j] == 1)
-                        continue;
-                    auto xx1 = std::max(ix1, x1[j]);
-                    auto yy1 = std::max(iy1, y1[j]);
-                    auto xx2 = std::min(ix2, x2[j]);
-                    auto yy2 = std::min(iy2, y2[j]);
-
-                    auto w = std::max(static_cast<float>(0), xx2 - xx1);
-                    auto h = std::max(static_cast<float>(0), yy2 - yy1);
-                    auto inter = w * h;
-                    auto ovr = inter / (iarea + areas[j] - inter);
-                    if (ovr > iou_threshold)
-                        suppressed[j] = 1;
-                }
-            }
+            int64_t num_to_keep;
+            AT_DISPATCH_FLOATING_TYPES_AND2(at::kHalf, at::kBFloat16, bboxes.scalar_type(), "nms", [&]() {
+                num_to_keep = nms_kernel(ndets,
+                                         suppressed_t.data_ptr<uint8_t>(),
+                                         keep_t.data_ptr<int64_t>(),
+                                         order_t.data_ptr<int64_t>(),
+                                         x1_t.data_ptr<scalar_t>(),
+                                         y1_t.data_ptr<scalar_t>(),
+                                         x2_t.data_ptr<scalar_t>(),
+                                         y2_t.data_ptr<scalar_t>(),
+                                         areas_t.data_ptr<scalar_t>(),
+                                         static_cast<scalar_t>(iou_threshold));
+            });
             return keep_t.narrow(0, 0, num_to_keep);
         }
 
@@ -149,7 +167,7 @@ namespace ultralytics {
                 auto x_split = x.split({4, nc, nm}, 1);
                 auto box = x_split[0], cls = x_split[1], mask = x_split[2];
                 auto [conf, j] = cls.max(1, true);
-                x = at::cat({box, conf, j.toType(at::kFloat), mask}, 1);
+                x = at::cat({box, conf, j.toType(prediction.scalar_type()), mask}, 1);
                 x = x.index({conf.view(-1) > conf_threshold});
                 int n = x.size(0);
                 if (!n) { continue; }
