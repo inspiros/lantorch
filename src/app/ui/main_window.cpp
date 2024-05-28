@@ -171,7 +171,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
             yolo_infer_worker.data(),
             &YoloInferenceWorker::new_result,
             this,
-            [this](unsigned int frame_id, const std::vector<Detection> &dets) {
+            [this](unsigned long frame_id, const std::vector<Detection> &dets) {
                 video_widget->request_bboxes_from_pool(dets);
             }, Qt::BlockingQueuedConnection);
 

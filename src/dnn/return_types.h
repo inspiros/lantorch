@@ -9,7 +9,7 @@
  */
 struct Classification {
     int label_id = -1;
-    std::string label = "";
+    std::string label;
     float probability = 0.;
 };
 
@@ -20,7 +20,7 @@ Q_DECLARE_METATYPE(Classification)
  */
 struct Detection {
     int label_id = -1;
-    std::string label = "";
+    std::string label;
     float confidence = 0.;
     cv::Rect2d bbox{};
 };

@@ -5,4 +5,4 @@
 #include <QMetaType>
 
 // TODO: register as needed
-const int GST_CLOCK_TIME_META = qRegisterMetaType<GstClockTime>("GstClockTime");
+const int GST_CLOCK_TIME_META_ID = qRegisterMetaType<GstClockTime>("GstClockTime");

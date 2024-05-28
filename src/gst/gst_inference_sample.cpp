@@ -87,7 +87,7 @@ GstFrameMeta *GstInferenceSample::frame_meta() const noexcept {
     return frame_meta_;
 }
 
-guint GstInferenceSample::frame_id() const {
+guint64 GstInferenceSample::frame_id() const {
     if (frame_meta_)
         return frame_meta_->frame_num;
     return buf_->offset;

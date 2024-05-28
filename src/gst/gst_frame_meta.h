@@ -13,7 +13,7 @@
 typedef struct _GstFrameMeta {
     GstMeta meta;
     /** Holds the current frame number of the source. */
-    guint frame_num;
+    guint64 frame_num;
     /** Holds the presentation timestamp (PTS) of the frame. */
     GstClockTime pts;
     /** Holds the decode timestamp (DTS) of the frame. */
@@ -43,15 +43,15 @@ inline GstFrameMeta *gst_buffer_get_frame_meta(GstBuffer *buf) {
  * A self destruct callback class that add GstFrameMeta to buffer.
  */
 class GstFrameMetaAddProbe : public GstBufferProbe {
-    guint64 frame_count = 0;
+    guint64 frame_count_ = 0;
 public:
     using MetaType = GstFrameMeta;
 
     GstFrameMetaAddProbe() = default;
 
-    inline void reset() {
-        frame_count = 0;
-    }
+    [[nodiscard]] inline guint64 frame_count() const;
+
+    inline void reset();
 
     GstPadProbeReturn call(GstPad *pad, GstPadProbeInfo *info, gpointer) override;
 };

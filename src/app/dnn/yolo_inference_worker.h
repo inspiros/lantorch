@@ -50,10 +50,10 @@ protected:
 
 signals:
 
-    void new_result(unsigned int frame_id,
+    void new_result(unsigned long frame_id,
                     const std::vector<Detection> &detections);
 
-    void new_sample_and_result(unsigned int frame_id,
+    void new_sample_and_result(unsigned long frame_id,
                                const GstInferenceSample &sample,
                                const std::vector<Detection> &detections);
 

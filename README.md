@@ -128,27 +128,19 @@ Otherwise, compiling from source is necessary and it may cause true headache.
 
 #### Optional:
 
-- [DeepStream SDK](https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Quickstart.html)
-  _(currently only **partially optional** as we use its plugin elements in the pipeline[^2] in
-  [``resources/configs.yaml``](resources/configs.yaml))_ and its dependencies listed in the link:
-    - NVIDIA driver
-    - CUDA
-    - TensorRT
 - [PillowResize](https://github.com/zurutech/pillow-resize): This allows the resize transform in
   ``dnn/torchvision/transforms.h`` to be identical to that of ``torchvision.transforms`` in python, but with performance
   tradeoff.
+- [DeepStream SDK](https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Quickstart.html)
+  _(only needed if you want to use its plugin elements in the pipeline[^2] in
+  [``resources/configs.yaml``](resources/configs.yaml))_ and its dependencies listed in the link:
+  - NVIDIA driver
+  - CUDA
+  - TensorRT
 
-[^2]: ``nvv4l2decoder`` allows us to modify buffers so that we can insert frame metadata via probe,
-while ``avdec_h264`` doesn't. This is a shortcoming that needs to be addressed.
-
-    However, without frame metadata (``frame_id``), a DeepStream-free pipeline like this one is fully functional:
-
-    ```
-    filesrc location=../data/240p1.mp4 ! qtdemux name=demuxer demuxer.video_0 !
-    h264parse ! avdec_h264 name=decoder ! videoconvert ! tee name=inference_tee
-    inference_tee. ! queue name=display_queue leaky=downstream !
-    videoconvert ! video/x-raw,format=(string)RGB ! videorate ! qwidget5videosink name=display_sink force-aspect-ratio=true
-    ```
+[^2]: ``nvv4l2decoder`` allows us to modify buffers so that we can insert full frame metadata via probe,
+while ``avdec_h264`` doesn't (but we still have access to the most important properties like ``frame_id`` and ``pts``).
+This is a shortcoming that needs to be addressed in the future.
 
 ## Getting Started
 

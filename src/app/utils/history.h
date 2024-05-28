@@ -4,7 +4,7 @@
 
 #include "qt/ConstantSizedMap"
 
-template<typename T, typename TimestampT = unsigned int>
+template<typename T, typename TimestampT = unsigned long>
 class History : public ConstantSizedMap<TimestampT, T> {
 public:
     explicit History(int max_size = 10) : ConstantSizedMap<TimestampT, T>(max_size) {

@@ -59,12 +59,16 @@ const GstMetaInfo *gst_frame_meta_get_info() {
     return meta_info;
 }
 
+guint64 GstFrameMetaAddProbe::frame_count() const {
+    return frame_count_;
+}
+
+void GstFrameMetaAddProbe::reset() {
+    frame_count_ = 0;
+}
+
 GstPadProbeReturn GstFrameMetaAddProbe::call(GstPad *pad, GstPadProbeInfo *info, gpointer) {
     auto *buf = (GstBuffer *) info->data;
-
-    auto frame_meta = GST_FRAME_META_ADD(buf);
-    if (frame_meta == NULL)
-        return GST_PAD_PROBE_OK;
 
     GstCaps *caps = gst_pad_get_current_caps(pad);
     GstStructure *structure = gst_caps_get_structure(caps, 0);
@@ -73,13 +77,22 @@ GstPadProbeReturn GstFrameMetaAddProbe::call(GstPad *pad, GstPadProbeInfo *info,
 //    auto *framerate = gst_structure_get_value(structure, "framerate");
 //    if (G_VALUE_TYPE(framerate) == GST_TYPE_FRACTION_RANGE)
 //        framerate = gst_value_get_fraction_range_min(framerate);
+    if (gst_buffer_is_writable(buf)) {
+        auto frame_meta = GST_FRAME_META_ADD(buf);
+        if (frame_meta == NULL)
+            return GST_PAD_PROBE_OK;
 
-    /* Add metadata */
-    frame_meta->frame_num = frame_count++;
-    frame_meta->pts = GST_BUFFER_PTS(buf);
-    frame_meta->dts = GST_BUFFER_DTS(buf);
-    frame_meta->duration = GST_BUFFER_DURATION(buf);
-    frame_meta->source_frame_width = width;
-    frame_meta->source_frame_height = height;
+        /* Add metadata */
+        frame_meta->frame_num = frame_count_++;
+        frame_meta->pts = GST_BUFFER_PTS(buf);
+        frame_meta->dts = GST_BUFFER_DTS(buf);
+        frame_meta->duration = GST_BUFFER_DURATION(buf);
+        frame_meta->source_frame_width = width;
+        frame_meta->source_frame_height = height;
+    } else {
+        // if buf is not writable, just modify it
+        buf->offset = frame_count_++;
+        buf->offset_end = buf->offset + 1;
+    }
     return GST_PAD_PROBE_OK;
 }

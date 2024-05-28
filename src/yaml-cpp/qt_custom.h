@@ -4,7 +4,7 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include "qt_yaml.h"
+#include "qt.h"
 #include "qt/ColorPalette"
 #include "qt/overlay_graphics_items/DetectionBoundingBox"
 

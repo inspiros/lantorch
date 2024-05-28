@@ -23,6 +23,7 @@
 #include <yaml-cpp/yaml.h>
 
 #include <QColor>
+#include <QDateTime>
 #include <QString>
 #include <QMap>
 #include <QVector>
@@ -127,6 +128,21 @@ namespace YAML {
                 return true;
             }
             return false;
+        }
+    };
+
+// QDateTime
+    template<>
+    struct convert<QDateTime> {
+        static Node encode(const QDateTime &rhs) {
+            return Node(rhs.toString(Qt::ISODate));
+        }
+
+        static bool decode(const Node &node, QDateTime &rhs) {
+            if (!node.IsScalar())
+                return false;
+            rhs = QDateTime::fromString(QString::fromStdString(node.Scalar()), Qt::ISODate);
+            return true;
         }
     };
 

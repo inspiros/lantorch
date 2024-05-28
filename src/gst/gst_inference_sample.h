@@ -60,7 +60,7 @@ public:
 
     [[nodiscard]] GstFrameMeta *frame_meta() const noexcept;
 
-    [[nodiscard]] guint frame_id() const;
+    [[nodiscard]] guint64 frame_id() const;
 
     [[nodiscard]] GstClockTime pts() const;
 

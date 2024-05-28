@@ -54,7 +54,7 @@ public:
 
 signals:
 
-    void frame_id_changed(unsigned int frame_id);
+    void frame_id_changed(unsigned long frame_id);
 
     void frame_changed(const QImage &frame);
 

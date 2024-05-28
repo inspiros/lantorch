@@ -4,10 +4,10 @@
 #include <filesystem>
 
 #include "yaml-cpp/enum_composer.h"
-#include "yaml-cpp/opencv_yaml.h"
-#include "yaml-cpp/qt_yaml.h"
-#include "yaml-cpp/qt_custom_yaml.h"
-#include "yaml-cpp/torch_yaml.h"
+#include "yaml-cpp/opencv.h"
+#include "yaml-cpp/qt.h"
+#include "yaml-cpp/qt_custom.h"
+#include "yaml-cpp/torch.h"
 
 /**
  * Singleton App Config manager.
