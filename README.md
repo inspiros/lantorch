@@ -119,7 +119,7 @@ Note that we still have full access to gstreamer and its plugins (including Deep
     - [qdarkstyle](https://github.com/ColinDuquesnoy/QDarkStyleSheet):
       _(already downloaded and placed in [resources/qdarkstyle](resources/qdarkstyle) but you may delete)_
 - [LibTorch>=2.0.0](https://pytorch.org/get-started/locally/): _(not sure about the lowest possible version)_
-- [OpenCV](https://docs.opencv.org/4.x/d2/de6/tutorial_py_setup_in_ubuntu.html):
+- [OpenCV>=4.5.0](https://docs.opencv.org/4.x/d2/de6/tutorial_py_setup_in_ubuntu.html):
   _(Highly recommended to install from source **the latest possible version** if you plan to use the ``opencv2/dnn``
   submodule for inferencing on cuda device)_
 

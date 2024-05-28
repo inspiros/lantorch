@@ -88,11 +88,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 # opencv
 if (EXISTS /usr/local/lib/cmake/opencv4)
     # default opencv path when installed from source
-    find_package(OpenCV REQUIRED PATHS /usr/local/lib/cmake/opencv4 NO_DEFAULT_PATH
-            COMPONENTS core imgproc dnn highgui)
+    find_package(OpenCV 4.5.0 REQUIRED PATHS /usr/local/lib/cmake/opencv4 NO_DEFAULT_PATH
+            COMPONENTS core imgproc dnn)
 else ()
-    find_package(OpenCV REQUIRED
-            COMPONENTS core imgproc dnn highgui)
+    find_package(OpenCV 4.5.0 REQUIRED
+            COMPONENTS core imgproc dnn)
 endif ()
 
 target_include_directories(${PROJECT_NAME} PRIVATE
@@ -101,7 +101,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         opencv_core
         opencv_imgproc
         opencv_dnn
-        opencv_highgui
 )
 
 # pillow-resize
